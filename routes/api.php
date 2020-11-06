@@ -1,6 +1,9 @@
 <?php
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\Team\PlayerController;
+use App\Http\Controllers\Team\TeamController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -13,7 +16,16 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+Route::post('register', [RegisterController::class, 'register']);
+Route::post('login', [LoginController::class, 'login']);
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
+     
+/*
+|---------------------------------------------------------------------------
+| Guarded api resources
+|---------------------------------------------------------------------------
+*/
+Route::middleware(['auth:api', 'json.response'])->group( function () {
+    Route::resource('teams', TeamController::class);
+    Route::resource('players', PlayerController::class);
 });
