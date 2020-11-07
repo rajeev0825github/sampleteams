@@ -1,5 +1,5 @@
 const mix = require('laravel-mix');
-
+const VuetifyLoaderPlugin = require('vuetify-loader/lib/plugin');
 /*
  |--------------------------------------------------------------------------
  | Mix Asset Management
@@ -11,7 +11,33 @@ const mix = require('laravel-mix');
  |
  */
 
-mix.js('resources/js/app.js', 'public/js')
-    .postCss('resources/css/app.css', 'public/css', [
-        //
-    ]);
+mix
+	.setPublicPath('public')
+	.setResourceRoot('/') // Turns assets paths in css relative to css file
+	.sass('resources/sass/main.scss', 'css/main.css')
+	.version()
+	.js('resources/js/app.js', 'js/main.js')
+	.version()
+	.extract(['axios' ])
+	.sourceMaps()
+if (mix.inProduction()) {
+	mix.version().options({
+		// Optimize JS minification process
+		terser: {
+			cache: true,
+			parallel: true,
+			sourceMap: true
+		}
+	});
+} else {
+	// Uses inline source-maps on development
+	mix.webpackConfig({
+		devtool: 'inline-source-map'
+	});
+}
+mix.extend('vuetify', new class {
+    webpackConfig (config) {
+        config.plugins.push(new VuetifyLoaderPlugin())
+    }
+})
+mix.vuetify()
