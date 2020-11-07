@@ -7,6 +7,7 @@ use App\Events\Team\TeamDestroyed;
 use App\Events\Team\TeamUpdated;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Team as TeamResource;
+use App\Models\Player;
 use App\Models\Team;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -123,5 +124,18 @@ class TeamController extends Controller
         $team->delete();
         
         return response(['success' => true], 204);
+    }
+
+    /**
+     * Populate dummy data to user accounts
+     *
+     * @return response
+     */
+    public function populateDummy()
+    {
+        Team::factory()->has(Player::factory()->count(10), 'players')->count(20)->create([
+            'user_id' => auth()->user()
+        ]);
+        return response(['success' => true], 201);
     }
 }

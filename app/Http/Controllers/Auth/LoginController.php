@@ -26,7 +26,7 @@ class LoginController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('guest')->except('logout');
+        $this->middleware('guest')->except('logout', 'session');
     }
 
     /**
@@ -74,15 +74,27 @@ class LoginController extends Controller
     {
         $validation = $this->validateLogin($request);
         if ($validation !== true) {
-            return response($validation, 422);
+            return response($validation, 401);
         }
 
         if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
             $user = Auth::user();
             return $this->authenticated($user);
         } else {
-            return response(['error' => 'Unauthorised'], 422);
+            return response(['error' => 'Unauthorised'], 401);
         }
+    }
+
+    /**
+     * Validates/refresh user session
+     *
+     * @param Request $request
+     * @return UserResource
+     */
+    public function session(Request $request)
+    {
+        $user = $request->user();
+        return new UserResource($user);
     }
 
     /**

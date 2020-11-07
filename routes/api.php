@@ -26,6 +26,8 @@ Route::post('login', [LoginController::class, 'login']);
 |---------------------------------------------------------------------------
 */
 Route::middleware(['auth:api', 'json.response'])->group( function () {
+    Route::get('session', [LoginController::class, 'session']);
     Route::resource('teams', TeamController::class);
     Route::resource('players', PlayerController::class);
+    Route::post('teams/populate', [TeamController::class, 'populateDummy']);
 });
